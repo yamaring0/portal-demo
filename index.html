@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>社内ポータル</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .transition-opacity { transition: opacity 0.5s ease-in-out; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans">
+
+  <!-- ログイン画面 -->
+  <div id="login-screen" class="fixed inset-0 z-50 flex items-center justify-center bg-blue-900 transition-opacity">
+    <div class="bg-white p-8 rounded-xl shadow-2xl w-96 max-w-[90%]">
+      <div class="text-center mb-6">
+        <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 text-blue-600 rounded-full mb-4">
+          <i class="fas fa-building text-2xl"></i>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-800">社内ポータル</h2>
+        <p class="text-sm text-gray-500 mt-1">ログインしてください</p>
+      </div>
+
+      <!-- エラーメッセージ -->
+      <div id="error-message" class="hidden mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-lg border border-red-200">
+        IDまたはパスワードが正しくありません。
+      </div>
+
+      <!-- パスワードマネージャー検知用の属性（name, autocomplete, action, method）を完備 -->
+      <form id="login-form" name="loginForm" action="#login" method="post" autocomplete="on" onsubmit="handleLogin(event)">
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1" for="username">ユーザーID</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <i class="fas fa-user text-gray-400"></i>
+            </div>
+            <input 
+              type="text" 
+              id="username" 
+              name="username" 
+              autocomplete="username" 
+               class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+              required>
+          </div>
+        </div>
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-gray-700 mb-1" for="password">パスワード</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <i class="fas fa-lock text-gray-400"></i>
+            </div>
+            <input 
+              type="password" 
+              id="password" 
+              name="password" 
+              autocomplete="current-password" 
+              class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+              required>
+          </div>
+        </div>
+        <button type="submit" id="login-btn" name="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors font-medium">
+          ログイン
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ダッシュボード画面 -->
+  <div class="flex h-screen overflow-hidden">
+    <aside class="hidden md:flex flex-col w-64 bg-white border-r border-gray-200 shadow-sm">
+      <div class="flex items-center justify-center h-16 border-b border-gray-200 bg-blue-50">
+        <i class="fas fa-building text-blue-600 text-xl mr-2"></i>
+        <span class="text-lg font-bold text-blue-800">社内ポータル</span>
+      </div>
+      <nav class="flex-1 overflow-y-auto py-4">
+        <ul class="space-y-1 px-3">
+          <li><a href="#" class="flex items-center px-3 py-2.5 bg-blue-50 text-blue-600 rounded-lg font-medium"><i class="fas fa-home w-6 text-center mr-2"></i>ホーム</a></li>
+          <li><a href="#" class="flex items-center px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-lg font-medium transition-colors"><i class="fas fa-bullhorn w-6 text-center mr-2"></i>お知らせ</a></li>
+          <li><a href="#" class="flex items-center px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-lg font-medium transition-colors"><i class="fas fa-calendar-alt w-6 text-center mr-2"></i>スケジュール</a></li>
+          <li><a href="#" class="flex items-center px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-lg font-medium transition-colors"><i class="fas fa-folder-open w-6 text-center mr-2"></i>社内ドキュメント</a></li>
+          <li><a href="#" class="flex items-center px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-lg font-medium transition-colors"><i class="fas fa-users w-6 text-center mr-2"></i>社員名簿</a></li>
+        </ul>
+      </nav>
+      <div class="p-4 border-t border-gray-200">
+        <a href="#" class="flex items-center px-3 py-2 text-gray-500 hover:text-gray-700 transition-colors">
+          <i class="fas fa-cog w-6 text-center mr-2"></i>設定
+        </a>
+      </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col overflow-hidden">
+      <header class="flex items-center justify-between h-16 bg-white border-b border-gray-200 px-4 sm:px-6 shadow-sm">
+        <div class="flex items-center">
+          <button class="md:hidden text-gray-500 hover:text-gray-700 focus:outline-none mr-4">
+            <i class="fas fa-bars text-xl"></i>
+          </button>
+          <div class="relative hidden sm:block">
+            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            <input type="search" name="search" autocomplete="off" placeholder="ポータル内を検索..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-64 bg-gray-50">
+          </div>
+        </div>
+        <div class="flex items-center">
+          <button class="text-gray-500 hover:text-blue-600 mr-4 relative">
+            <i class="fas fa-bell text-xl"></i>
+            <span class="absolute top-0 right-0 -mt-1 -mr-1 flex h-3 w-3">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+            </span>
+          </button>
+          <div class="flex items-center gap-2 cursor-pointer">
+            <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">U</div>
+            <span id="display-user" class="text-sm font-medium text-gray-700 hidden sm:block">ユーザー</span>
+          </div>
+        </div>
+      </header>
+
+      <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-4 sm:p-6 lg:p-8">
+        <h1 class="text-2xl font-bold text-gray-800 mb-6">ダッシュボード</h1>
+        <div class="mb-8">
+          <h2 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">よく使うシステム</h2>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <a href="#" class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center justify-center hover:shadow-md transition-shadow group">
+              <div class="w-12 h-12 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mb-3 group-hover:bg-blue-500 group-hover:text-white transition-colors"><i class="fas fa-envelope-open-text text-xl"></i></div>
+              <span class="text-sm font-medium text-gray-700">Webメール</span>
+            </a>
+            <a href="#" class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center justify-center hover:shadow-md transition-shadow group">
+              <div class="w-12 h-12 bg-green-50 text-green-500 rounded-full flex items-center justify-center mb-3 group-hover:bg-green-500 group-hover:text-white transition-colors"><i class="fas fa-file-invoice-dollar text-xl"></i></div>
+              <span class="text-sm font-medium text-gray-700">経費精算</span>
+            </a>
+            <a href="#" class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center justify-center hover:shadow-md transition-shadow group">
+              <div class="w-12 h-12 bg-purple-50 text-purple-500 rounded-full flex items-center justify-center mb-3 group-hover:bg-purple-500 group-hover:text-white transition-colors"><i class="fas fa-clock text-xl"></i></div>
+              <span class="text-sm font-medium text-gray-700">勤怠管理</span>
+            </a>
+            <a href="#" class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center justify-center hover:shadow-md transition-shadow group">
+              <div class="w-12 h-12 bg-orange-50 text-orange-500 rounded-full flex items-center justify-center mb-3 group-hover:bg-orange-500 group-hover:text-white transition-colors"><i class="fas fa-project-diagram text-xl"></i></div>
+              <span class="text-sm font-medium text-gray-700">ワークフロー</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100">
+            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+              <h2 class="text-lg font-bold text-gray-800"><i class="fas fa-info-circle text-blue-500 mr-2"></i>最新のお知らせ</h2>
+              <a href="#" class="text-sm text-blue-600 hover:underline">すべて見る</a>
+            </div>
+            <div class="p-6">
+              <ul class="space-y-4">
+                <li class="flex items-start gap-4 pb-4 border-b border-gray-50">
+                  <span class="px-2 py-1 bg-red-100 text-red-600 text-xs font-bold rounded">重要</span>
+                  <div>
+                    <p class="text-sm text-gray-500 mb-1">2026/10/22</p>
+                    <a href="#" class="text-gray-800 font-medium hover:text-blue-600">全社ネットワークメンテナンスのお知らせ（10/25 深夜）</a>
+                  </div>
+                </li>
+                <li class="flex items-start gap-4 pb-4 border-b border-gray-50">
+                  <span class="px-2 py-1 bg-blue-100 text-blue-600 text-xs font-bold rounded">総務</span>
+                  <div>
+                    <p class="text-sm text-gray-500 mb-1">2026/10/20</p>
+                    <a href="#" class="text-gray-800 font-medium hover:text-blue-600">年末調整の書類提出について</a>
+                  </div>
+                </li>
+                <li class="flex items-start gap-4">
+                  <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs font-bold rounded">IT部</span>
+                  <div>
+                    <p class="text-sm text-gray-500 mb-1">2026/10/18</p>
+                    <a href="#" class="text-gray-800 font-medium hover:text-blue-600">新しい社内ポータルシステム（β版）を公開しました</a>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+            <div class="px-6 py-4 border-b border-gray-100">
+              <h2 class="text-lg font-bold text-gray-800"><i class="fas fa-check-square text-green-500 mr-2"></i>My Tasks</h2>
+            </div>
+            <div class="p-6">
+              <ul class="space-y-3">
+                <li class="flex items-center gap-3">
+                  <input type="checkbox" class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500">
+                  <span class="text-gray-700 text-sm">月次レポートの提出</span>
+                </li>
+                <li class="flex items-center gap-3">
+                  <input type="checkbox" class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500">
+                  <span class="text-gray-700 text-sm">セキュリティ研修動画の視聴</span>
+                  <span class="ml-auto text-xs text-red-500 font-bold">今日まで</span>
+                </li>
+                <li class="flex items-center gap-3">
+                  <input type="checkbox" class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" checked>
+                  <span class="text-gray-400 text-sm line-through">交通費の申請</span>
+                </li>
+              </ul>
+              <button class="mt-6 w-full py-2 border border-gray-300 text-gray-600 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">
+                <i class="fas fa-plus mr-1"></i> タスクを追加
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    // ご共有いただいたGASのURLを設定済み
+    const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbzu9cNt-ChuU5ZTCEglZy6UAVUaf223K6gCJz5Chqughj71UMK7HafV_Z57lqlimDfXUQ/exec';
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const userId = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const errorMsg = document.getElementById('error-message');
+      const loginBtn = document.getElementById('login-btn');
+
+      loginBtn.innerText = '認証中...';
+      loginBtn.disabled = true;
+      errorMsg.classList.add('hidden');
+
+      // 1. GAS内部（iframe内）で動いている場合は google.script.run を使用
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(function(isValid) {
+            finishLogin(isValid, userId);
+          })
+          .withFailureHandler(function() {
+            loginBtn.innerText = 'ログイン';
+            loginBtn.disabled = false;
+            alert('サーバー通信エラーが発生しました。');
+          })
+          .verifyLogin(userId, password);
+        return;
+      }
+
+      // 2. 外部HTMLとして直接開いている場合は fetch で GAS の doPost に通信
+      try {
+        const response = await fetch(GAS_API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ userId, password })
+        });
+        const result = await response.json();
+        finishLogin(result.success, userId);
+      } catch (error) {
+        loginBtn.innerText = 'ログイン';
+        loginBtn.disabled = false;
+        alert('通信エラーが発生しました。GASのデプロイ設定（アクセスできるユーザー：全員）を確認してください。');
+      }
+    }
+
+    function finishLogin(isValid, userId) {
+      const errorMsg = document.getElementById('error-message');
+      const loginBtn = document.getElementById('login-btn');
+      loginBtn.innerText = 'ログイン';
+      loginBtn.disabled = false;
+
+      if (isValid) {
+        document.getElementById('display-user').innerText = userId;
+        const loginScreen = document.getElementById('login-screen');
+        loginScreen.classList.add('opacity-0');
+        setTimeout(() => {
+          loginScreen.style.display = 'none';
+        }, 500);
+      } else {
+        errorMsg.classList.remove('hidden');
+      }
+    }
+  </script>
+</body>
+</html>
